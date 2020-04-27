@@ -1,4 +1,4 @@
-# JSON Born 2 ("The JSON Supremacy"?)
+# JSON Born
 
 Exploring accessing local JSON files.
 
