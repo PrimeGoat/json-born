@@ -2,11 +2,12 @@ const fs = require('fs');
 
 let userlist = [];
 
-const user = function(name, age, eyeColor, friends = []) {
+const user = function(name, age, eyeColor, friends = [], index = 0) {
 	return {
-		name: name,
+		index: index,
 		age: age,
 		eyeColor: eyeColor,
+		name: name,
 		friends: friends
 	}
 }
@@ -27,13 +28,13 @@ const loadUsers = function() {
 				getCommands(command, args);
 			break;
 			case "post":
-
+				postCommands(command, args);
 			break;
 			case "put":
-
+				putCommands(command, args);
 			break;
 			case "delete":
-
+				deleteCommands(command, args);
 			break;
 			default:
 				console.log("Invalid method: " + method);
@@ -43,17 +44,15 @@ const loadUsers = function() {
 
 // Write json file
 const saveUsers = function() {
-	setTimeout(function() {
-		data = JSON.stringify(userlist);
-		fs.writeFile("./users2.json", data, "utf8", function(error) {
-			if(error) {
-				throw error;
-			}
-		});	
-	}, 250)
+	data = JSON.stringify(userlist);
+	fs.writeFile("./users.json", data, "utf8", function(error) {
+		if(error) {
+			throw error;
+		}
+	});	
 }
 
-
+// Process GETs
 const getCommands = function(command, args) {
 	if(!command) {
 		console.log("Missing command.");
@@ -86,7 +85,7 @@ const getCommands = function(command, args) {
 				} else {
 					console.log(cuser.name + " has no friends.  Muahahahaha");
 				}
-						} else {
+			} else {
 				console.log("User " + args[0] + " doesn't exist.");
 			}
 			break;
@@ -107,6 +106,80 @@ const printUser = function(cuser) {
 	}
 	console.log();
 }
+
+// Process POSTs
+const postCommands = function(command, args) {
+	if(!command) {
+		console.log("Missing command.");
+		return;
+	}
+
+	switch(command.toLowerCase()) {
+		case "user":
+			let name = args[0];
+			let age = args[1];
+			let eyes = args[2];
+
+			// name, age, eyeColor, friends = [], index = 0
+			userlist.push(user(name, age, eyes, [], userlist.length));
+
+			console.log("User added:");
+			printUser(userlist[userlist.length - 1]);
+
+			break;
+		case "friends":
+			let index = args[0];
+			let friendName = args[1];
+			if(!userlist[index]) {
+				console.log("User index " + index + " doesn't exist.");
+			}
+			console.log("Current friends list: " + userlist[index].friends);
+			let id = makeFriendId(userlist[index].friends);
+			
+			userlist[index].friends.push({id: id, name: friendName});
+			
+			friends = [];
+			for(friend of userlist[index].friends) {
+				friends.push(friend.name);
+			}
+			console.log("Friend " + friendName + " has been added to " + userlist[index].name + "'s friend list.  Their current friends list is now: " + friends.join(", "));
+
+			break;
+		default:
+			console.log("Invalid command: " + command);
+	}
+	saveUsers();
+}
+
+const makeFriendId = function(friends) {
+	let id = 0;
+
+	for(friend of friends) {
+		if(id == friend.id) {
+			id++;
+		}
+	}
+
+	return id;
+}
+
+// Process PUTs
+const putCommands = function(command, args) {
+	if(!command) {
+		console.log("Missing command.");
+		return;
+	}
+
+	switch(command.toLowerCase()) {
+		case "user":
+
+			break;
+		default:
+			console.log("Invalid command: " + command);
+	}
+	saveUsers();
+}
+
 
 loadUsers();
 //saveUsers();
