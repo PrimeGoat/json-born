@@ -19,6 +19,7 @@ const loadUsers = function() {
 			throw error;
 		}
 		userlist = JSON.parse(data);
+		
 		let method = process.argv[2];
 		let command = process.argv[3];
 		let args = process.argv.slice(4);
@@ -194,6 +195,44 @@ const putCommands = function(command, args) {
 	saveUsers();
 }
 
+// Process DELETEs
+const deleteCommands = function(command, args) {
+	if(!command) {
+		console.log("Missing command.");
+		return;
+	}
+
+	switch(command.toLowerCase()) {
+		case "user":
+			let index = args[0];
+
+			if(typeof(userlist[index]) == "undefined") {
+				console.log("User with index " + index + " does not exist.");
+				break
+			}
+			console.log("Deleting " + userlist[index].name);
+
+			delete userlist[index];
+			let users = [];
+			for(let user of userlist) {
+				if(user != undefined) {
+					users.push(user);
+				}
+			}
+
+			// Reindex list
+			userlist = [];
+			let i = 0;
+			for(let user of users) {
+				user.index = i++;
+				userlist.push(user);
+			}
+
+			break;
+		default:
+			console.log("Invalid command: " + command);
+	}
+	saveUsers();
+}
 
 loadUsers();
-//saveUsers();
