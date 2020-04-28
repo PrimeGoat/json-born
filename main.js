@@ -96,7 +96,7 @@ const getCommands = function(command, args) {
 
 const printUser = function(cuser) {
 	//console.log("User " + cuser.index + ':');
-	console.log(cuser.name + ", age " + cuser.age + ", eye color: " + cuser.eyeColor);
+	console.log(cuser.index + ": " + cuser.name + ", age " + cuser.age + ", eye color: " + cuser.eyeColor);
 	if(cuser.friends.length) {
 		friends = [];
 		for(friend of cuser.friends) {
@@ -172,6 +172,20 @@ const putCommands = function(command, args) {
 
 	switch(command.toLowerCase()) {
 		case "user":
+			let index = args[0];
+			let propertyName = args[1];
+			let value = args[2];
+
+			if(typeof(value) == "undefined") {
+				console.log("Syntax: PUT user <index> <property name> <new value>");
+				break;
+			}
+			if(typeof(userlist[index]) == "undefined") {
+				console.log("User with index " + index + " does not exist.");
+				break
+			}
+			console.log("User " + userlist[index].name + "'s " + propertyName + " property changed from " + userlist[index][propertyName] + " to " + value);
+			userlist[index][propertyName] = value;
 
 			break;
 		default:
